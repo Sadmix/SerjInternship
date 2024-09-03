@@ -1,0 +1,6 @@
+[submodule "SerjInternship"]
+	path = SerjInternship
+	url = https://github.com/Sadmix/SerjInternship
+[submodule "tmp2"]
+	path = tmp2
+	url = https://github.com/Sadmix/SerjInternship
