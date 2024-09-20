@@ -1,10 +1,6 @@
-/* Модифицируйте функцию getop так, чтобы отпала необходимость в функции ungetch.
-Подсказка: используйте внутреннюю статическую переменную. */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <string.h>
 #include <math.h>
 
 #define MAXOP 100    // макс. размер операнда или оператора
@@ -19,6 +15,7 @@ double get_var(char var);
 
 double last_printed = 0.0;  // переменная для хранения последнего напечатанного значения
 double variables[26];       // массив для 26 переменных
+int sp = 0;          // следующая свободная позиция в стеке
 
 int main() {
     char line[MAXOP];
@@ -39,16 +36,32 @@ int main() {
                     push(get_var(var));
                     break;
                 case '+':
+                    if (sp < 2) {
+                        printf("ошибка: недостаточно операндов для сложения\n");
+                        break;
+                    }
                     push(pop() + pop());
                     break;
                 case '*':
+                    if (sp < 2) {
+                        printf("ошибка: недостаточно операндов для умножения\n");
+                        break;
+                    }
                     push(pop() * pop());
                     break;
                 case '-':
+                    if (sp < 2) {
+                        printf("ошибка: недостаточно операндов для вычитания\n");
+                        break;
+                    }
                     op2 = pop();
                     push(pop() - op2);
                     break;
                 case '/':
+                    if (sp < 2) {
+                        printf("ошибка: недостаточно операндов для деления\n");
+                        break;
+                    }
                     op2 = pop();
                     if (op2 != 0.0)
                         push(pop() / op2);
@@ -56,6 +69,10 @@ int main() {
                         printf("ошибка: деление на нуль\n");
                     break;
                 case '%':
+                    if (sp < 2) {
+                        printf("ошибка: недостаточно операндов для остатка от деления\n");
+                        break;
+                    }
                     op2 = pop();
                     if (op2 != 0.0)
                         push(fmod(pop(), op2));
@@ -100,7 +117,6 @@ int main() {
 
 #define MAXVAL 100
 
-int sp = 0;          // следующая свободная позиция в стеке
 double val[MAXVAL];  // стек операндов
 
 void push(double f) {
@@ -140,50 +156,68 @@ int getop(char s[], char line[], int *index) {
     char c;
     static char lastc = 0;  // статическая переменная для хранения лишнего символа
 
+    // Проверка на наличие символа в lastc
     if (lastc != 0) {
         c = lastc;
         lastc = 0;
     } else {
+        // Проверяем, не вышли ли мы за пределы строки
+        if (line[*index] == '\0') {
+            return '\0';  // конец строки
+        }
         c = line[*index];
+        (*index)++;
     }
 
+    // Пропускаем пробелы и табуляции
     while ((s[0] = c) == ' ' || c == '\t') {
-        c = line[++(*index)];
+        c = line[(*index)++];
     }
 
-    s[1] = '\0';
+    s[1] = '\0';  // Для символов или операторов устанавливаем завершающий 0
 
+    // Если это не цифра, не точка, не буква, не минус - возвращаем оператор
     if (!isdigit(c) && c != '.' && !isalpha(c) && c != '-') {
-        (*index)++;
-        return c;  // не число и не переменная
+        return c;
     }
 
+    // Если это буква, возвращаем переменную
     if (isalpha(c)) {
-        (*index)++;
-        return VAR;  // это переменная
+        return VAR;
     }
 
+    // Проверка на отрицательное число
     if (c == '-') {
-        char next = line[*index + 1];
+        char next = line[*index];
         if (!isdigit(next) && next != '.') {
-            (*index)++;
             return '-';  // это оператор вычитания, а не отрицательное число
         }
     }
 
-    if (isdigit(c) || c == '-') {  // накопление целой части
-        while (isdigit(line[++(*index)] = c = line[*index]))
-            s[++i] = c;
+    // Считывание целой части числа
+    if (isdigit(c) || c == '-') {
+        s[i++] = c;
+        while (isdigit(c = line[*index])) {
+            s[i++] = c;
+            (*index)++;
+        }
     }
 
-    if (c == '.')  // накопление дробной части
-        while (isdigit(line[++(*index)] = c = line[*index]))
-            s[++i] = c;
+    // Считывание дробной части числа
+    if (c == '.') {
+        s[i++] = c;
+        (*index)++;
+        while (isdigit(c = line[*index])) {
+            s[i++] = c;
+            (*index)++;
+        }
+    }
 
-    s[i] = '\0';
+    s[i] = '\0';  // Завершаем строку
 
+    // Если символ не конец строки, сохраняем его в lastc для следующего вызова
     if (c != '\0') {
-        lastc = c;  // сохранение лишнего символа для следующего вызова
+        lastc = c;
     }
 
     return NUMBER;
