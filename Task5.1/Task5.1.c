@@ -1,7 +1,3 @@
-/* Функция getint написана так, что знаки - или +, за которыми не следует цифра, она
-понимает как "правильное" представление нуля. Скорректируйте программу таким образом, чтобы в
-подобных случаях она возвращала прочитанный знак назад во ввод. */
-
 #include <stdio.h>
 #include <ctype.h>
 
@@ -13,7 +9,6 @@ int getint(int *pn);
 
 char buf[BUFSIZE];  // буфер для ungetch
 int bufp = 0;       // следующая свободная позиция в буфере
-
 
 int getch(void)
 {
@@ -33,12 +28,11 @@ int getint(int *pn)
 {
     int c, sign;
 
-    while (isspace(c = getch()))  // пропуск символов разделителей 
+    while (isspace(c = getch()))  // пропуск символов разделителей
         ;
 
     if (!isdigit(c) && c != EOF && c != '+' && c != '-') {
-        ungetch(c);  // не число
-        return 0;
+        return c;    // Возвращаем символ, который не является числом
     }
 
     sign = (c == '-') ? -1 : 1;
@@ -48,8 +42,7 @@ int getint(int *pn)
         int temp = getch();
         if (!isdigit(temp)) {     // Если за знаком не следует цифра
             ungetch(temp);        // Возвращаем символ обратно
-            ungetch(c);           // Возвращаем знак обратно
-            return 0;
+            return c;             // Возвращаем знак как некорректный ввод
         }
         c = temp;  // Если символ является цифрой, продолжаем
     }
@@ -61,17 +54,17 @@ int getint(int *pn)
     if (c != EOF)
         ungetch(c);
 
-    return c;
+    return 1;  // Возвращаем 1, если число успешно считано
 }
 
 int main(void)
 {
     int n, result;
     while ((result = getint(&n)) != EOF) {
-        if (result)  // Если было корректно считано число
+        if (result == 1)  // Если было корректно считано число
             printf("Считано число: %d\n", n);
         else
-            printf("Это не число\n");
+            printf("Это не число: %c\n", result);  // Выводим некорректный символ
     }
 
     return 0;
