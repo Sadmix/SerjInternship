@@ -1,7 +1,3 @@
-/* Напишите функцию getfloat — аналог getint для чисел с плавающей точкой. Какой тип
-будет иметь результирующее значение, выдаваемое функцией getfloat?
-*/
-
 #include <stdio.h>
 #include <ctype.h>
 
@@ -37,8 +33,7 @@ int getfloat(float *pn)
         ;
 
     if (!isdigit(c) && c != EOF && c != '+' && c != '-' && c != '.') {
-        ungetch(c);  // не число
-        return 0;
+        return c;  // Вернуть некорректный символ
     }
 
     sign = (c == '-') ? -1 : 1;
@@ -48,8 +43,7 @@ int getfloat(float *pn)
         int temp = getch();
         if (!isdigit(temp) && temp != '.') {  // Если за знаком не следует цифра или точка
             ungetch(temp);  // Возвращаем символ обратно
-            ungetch(c);     // Возвращаем знак обратно
-            return 0;
+            return c;       // Возвращаем знак как некорректный ввод
         }
         c = temp;  // Если символ является цифрой или точкой, продолжаем
     }
@@ -72,7 +66,7 @@ int getfloat(float *pn)
     if (c != EOF)
         ungetch(c);
 
-    return c;
+    return 1;  // Возвращаем 1, если число успешно считано
 }
 
 int main(void)
@@ -80,10 +74,10 @@ int main(void)
     float n;
     int result;
     while ((result = getfloat(&n)) != EOF) {
-        if (result)  // Если было корректно считано число
+        if (result == 1)  // Если было корректно считано число
             printf("Считано число с плавающей точкой: %f\n", n);
         else
-            printf("Это не число\n");
+            printf("Это не число: %c\n", result);  // Выводим некорректный символ
     }
 
     return 0;
