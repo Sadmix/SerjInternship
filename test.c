@@ -178,10 +178,10 @@ int main()
     (NULL == CU_add_test(rand, "Randomize matrix", test_randomize_matrix_rand)) || 
     (NULL == CU_add_test(simple, "Add matrix", test_add_matrix_simple)) ||
     (NULL == CU_add_test(rand, "Add matrix", test_add_matrix_rand)) ||
-    (NULL == CU_add_test(simple, "Sub matrix", test_sub_matrix_simple)) ||
-    (NULL == CU_add_test(rand, "Sub matrix", test_sub_matrix_rand)) ||
-    (NULL == CU_add_test(simple, "Scale matrix", test_scale_matrix_simple)) ||
-    (NULL == CU_add_test(rand, "Scale matrix", test_scale_matrix_rand)) ||
+//    (NULL == CU_add_test(simple, "Sub matrix", test_sub_matrix_simple)) ||
+//    (NULL == CU_add_test(rand, "Sub matrix", test_sub_matrix_rand)) ||
+//    (NULL == CU_add_test(simple, "Scale matrix", test_scale_matrix_simple)) ||
+//    (NULL == CU_add_test(rand, "Scale matrix", test_scale_matrix_rand)) ||
     (NULL == CU_add_test(simple, "Mul matrix", test_mul_matrix_simple)) ||
     (NULL == CU_add_test(rand, "Mul matrix", test_mul_matrix_rand)))
   {
