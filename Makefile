@@ -1,9 +1,10 @@
-.PHONY: build
+.PHONY: build test
 
-all: build
+all: build test
 
 build:
-	gcc main.c
+	gcc test.c -lcunit -lgsl -o test
 
 test:
-	@echo "test"
+	./test
+	
