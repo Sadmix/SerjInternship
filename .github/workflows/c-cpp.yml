@@ -18,5 +18,9 @@ jobs:
       run: sudo apt install -y libgsl27 libcunit1 libcunit1-doc libcunit1-dev
     - name: make build
       run: make build
+  
+  run_test:
+    runs-on: ubuntu-latest
+    steps:
     - name: make test
       run: make test
