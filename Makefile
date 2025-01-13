@@ -3,7 +3,7 @@
 all: build test
 
 build:
-	gcc test.c matrix.c -lcunit -lgsl -o test
+	gcc test.c matrix.c --coverage -lcunit -lgsl -o test
 
 test:
 	./test
