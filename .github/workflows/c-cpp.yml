@@ -12,14 +12,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout repo
+    - name: Checkout
       uses: actions/checkout@master
-    - name: install dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgsl27 libgsl-dev libcunit1 libcunit1-doc libcunit1-dev
+        sudo apt-get install -y libgsl27 libgsl-dev libcunit1 libcunit1-doc libcunit1-dev lcov
         ls /usr/include/gsl
-    - name: make build
+    - name: Build
       run: make build
-    - name: make test
+    - name: Run
       run: make test
+    - name: Generate code coverage results
+      run: |
+        lcov --directory . --capture --output-file test.info
+        genhtml -o coverage test.info
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage-report
+        path: coverage/index.html
