@@ -2,7 +2,7 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
 
-#include "matrix_lib.h"
+#include "matrix.h"
 
 int rand_range(int min, int max) {
   return rand()%(max-min)+min;
@@ -16,14 +16,14 @@ void randomize_gsl_matrix(gsl_matrix** a, int rand_min, int rand_max) {
   }
 }
 
-int compare_matricies(const gsl_matrix* exp, const matrix* act) {
+int compare_matricies(const gsl_matrix* exp, const Matrix* act) {
   if (exp->size1 != act->rows)  
     return 0;
   if (exp->size2 != act->cols)
     return 0;
   for (int i = 0; i < exp->size1; i++) {
     for (int j = 0; j < exp->size2; j++) {
-      if (gsl_matrix_get(exp, i, j) != act->data[i][j])
+      if (gsl_matrix_get(exp, i, j) != act->elems[i][j])
         return 0;  
     }
   }
