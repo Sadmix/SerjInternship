@@ -6,25 +6,23 @@ Matrix create(int rows, int cols) {
     Matrix m;
     m.rows = rows;
     m.cols = cols;
-
-    // Выделение памяти для строк
     m.elems = (double **)malloc(rows * sizeof(double *));
     if (m.elems == NULL) {
         fprintf(stderr, "Ошибка: не удалось выделить память для строк.\n");
-        exit(EXIT_FAILURE);
+        // Возвращаем пустую матрицу для обозначения ошибки
+        return (Matrix){0, 0, NULL};
     }
 
-    // Выделение памяти для каждого столбца в строках
     for (int i = 0; i < rows; i++) {
         m.elems[i] = (double *)malloc(cols * sizeof(double));
         if (m.elems[i] == NULL) {
             fprintf(stderr, "Ошибка: не удалось выделить память для элементов.\n");
-            // Освобождение ранее выделенной памяти перед выходом
+            // Освобождаем уже выделенную память
             for (int j = 0; j < i; j++) {
                 free(m.elems[j]);
             }
             free(m.elems);
-            exit(EXIT_FAILURE);
+            return (Matrix){0, 0, NULL};
         }
     }
 
@@ -56,10 +54,15 @@ void randomize(Matrix *m, double min, double max) {
 Matrix add(Matrix *a, Matrix *b) {
     if (a->rows != b->rows || a->cols != b->cols) {
         fprintf(stderr, "Ошибка: размеры матриц не совпадают для сложения.\n");
-        exit(EXIT_FAILURE);
+        return (Matrix){0, 0, NULL};
     }
 
     Matrix c = create(a->rows, a->cols);
+    if (c.elems == NULL) {
+        fprintf(stderr, "Ошибка: не удалось создать результирующую матрицу для сложения.\n");
+        return c; // Возвращаем пустую матрицу
+    }
+
     for (int i = 0; i < a->rows; i++) {
         for (int j = 0; j < a->cols; j++) {
             c.elems[i][j] = a->elems[i][j] + b->elems[i][j];
@@ -72,10 +75,15 @@ Matrix add(Matrix *a, Matrix *b) {
 Matrix sub(Matrix *a, Matrix *b) {
     if (a->rows != b->rows || a->cols != b->cols) {
         fprintf(stderr, "Ошибка: размеры матриц не совпадают для вычитания.\n");
-        exit(EXIT_FAILURE);
+        return (Matrix){0, 0, NULL};
     }
 
     Matrix c = create(a->rows, a->cols);
+    if (c.elems == NULL) {
+        fprintf(stderr, "Ошибка: не удалось создать результирующую матрицу для вычитания.\n");
+        return c; // Возвращаем пустую матрицу
+    }
+
     for (int i = 0; i < a->rows; i++) {
         for (int j = 0; j < a->cols; j++) {
             c.elems[i][j] = a->elems[i][j] - b->elems[i][j];
@@ -88,10 +96,15 @@ Matrix sub(Matrix *a, Matrix *b) {
 Matrix mul(Matrix *a, Matrix *b) {
     if (a->cols != b->rows) {
         fprintf(stderr, "Ошибка: размеры матриц не подходят для умножения.\n");
-        exit(EXIT_FAILURE);
+        return (Matrix){0, 0, NULL};
     }
 
     Matrix c = create(a->rows, b->cols);
+    if (c.elems == NULL) {
+        fprintf(stderr, "Ошибка: не удалось создать результирующую матрицу для умножения.\n");
+        return c; // Возвращаем пустую матрицу
+    }
+
     for (int i = 0; i < a->rows; i++) {
         for (int j = 0; j < b->cols; j++) {
             c.elems[i][j] = 0;
