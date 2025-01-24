@@ -4,8 +4,16 @@
 
 #include "matrix.h"
 
-int rand_range(int min, int max) {
-  return rand()%(max-min)+min;
+void print_gsl_matrix(const gsl_matrix* m) {
+  for (int i = 0; i < m->size1; i++) {
+    for (int j = 0; j < m->size2; j++)
+      printf("%.2f ", gsl_matrix_get(m, i, j));
+    printf("\n");
+  }
+}
+
+double rand_range(double min, double max) {
+  return ((double)rand())/RAND_MAX*(max-min)+min;
 }
 
 void randomize_gsl_matrix(gsl_matrix** a, int rand_min, int rand_max) {
@@ -17,7 +25,7 @@ void randomize_gsl_matrix(gsl_matrix** a, int rand_min, int rand_max) {
 }
 
 int compare_matricies(const gsl_matrix* exp, const Matrix* act) {
-  if (exp->size1 != act->rows)  
+  if (exp->size1 != act->rows)
     return 0;
   if (exp->size2 != act->cols)
     return 0;
@@ -28,6 +36,12 @@ int compare_matricies(const gsl_matrix* exp, const Matrix* act) {
     }
   }
   return 1;
+}
+
+ check_status(const Matrix *res) {
+  if ((res->rows == 0) && (res->cols == 0) && (res->elems == NULL))
+    return GSL_EBADLEN;
+  return GSL_SUCCESS;
 }
 
 int scale_gsl_matrix(gsl_matrix** m, double scale) {
